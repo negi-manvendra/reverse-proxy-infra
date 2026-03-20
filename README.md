@@ -198,6 +198,133 @@ reverse-proxy-infrastructure/
 * Health checks
 
 ---
+## 🖥️ Run This Project on Another Machine
+
+Follow these steps to run this project on a new system (Ubuntu / WSL):
+
+---
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/reverse-proxy-infrastructure.git
+cd reverse-proxy-infrastructure
+```
+
+---
+
+### 2️⃣ Install Required Packages
+
+```bash
+sudo apt update
+sudo apt install nginx netcat-openbsd -y
+```
+
+---
+
+### 3️⃣ Start Backend Servers
+
+Open **two terminals**:
+
+```bash
+./backend/app1/server.sh
+```
+
+```bash
+./backend/app2/server.sh
+```
+
+---
+
+### 4️⃣ Configure NGINX
+
+Remove default config:
+
+```bash
+sudo rm -f /etc/nginx/sites-enabled/default
+```
+
+Copy project config:
+
+```bash
+sudo cp nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-available/
+```
+
+Enable config:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/
+```
+
+---
+
+### 5️⃣ Add Upstream Configuration
+
+Edit main config:
+
+```bash
+sudo nano /etc/nginx/nginx.conf
+```
+
+Inside the `http {}` block, add:
+
+```nginx
+upstream backend_servers {
+    server 127.0.0.1:8081;
+    server 127.0.0.1:8082;
+}
+```
+
+---
+
+### 6️⃣ Restart NGINX
+
+```bash
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+---
+
+### 7️⃣ Test the Setup
+
+```bash
+curl http://localhost/app1
+curl http://localhost/app2
+curl http://localhost/loadbalance
+```
+
+---
+
+### ✅ Expected Output
+
+* `/app1` → Hello from Backend 1
+* `/app2` → Hello from Backend 2
+* `/loadbalance` → Alternates between both
+
+---
+
+### ⚠️ Troubleshooting
+
+* **NGINX not starting**
+
+  ```bash
+  sudo nginx -t
+  ```
+
+* **Port already in use**
+
+  ```bash
+  sudo lsof -i :8081
+  sudo kill -9 <PID>
+  ```
+
+* **404 error**
+
+  ```bash
+  sudo rm /etc/nginx/sites-enabled/default
+  ```
+
 
 ## 👨‍💻 Author
 
