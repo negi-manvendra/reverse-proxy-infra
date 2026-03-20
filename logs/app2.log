@@ -1,0 +1,14 @@
+nohup: ignoring input
+GET /app2 HTTP/1.1
+Host: localhost
+X-Real-IP: ::1
+X-Forwarded-For: ::1
+Connection: close
+User-Agent: curl/8.5.0
+Accept: */*
+
+GET / HTTP/1.1
+Host: 127.0.0.1:8082
+User-Agent: curl/8.5.0
+Accept: */*
+
